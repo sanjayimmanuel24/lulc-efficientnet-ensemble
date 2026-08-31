@@ -58,6 +58,10 @@ def parse_args():
     p.add_argument("--device", choices=["auto", "cuda", "cpu"], default="auto")
     p.add_argument("--seed", type=int, default=None, help="fix which random tiles are drawn")
     p.add_argument("--figure", action="store_true", help="also save a figure of the predictions")
+    p.add_argument("--disagreements", action="store_true",
+                   help="Sample ONLY tiles where the two branches predicted different classes. "
+                        "Random tiles are ~98.6%% agreement, so they make the dual-branch design "
+                        "look redundant; these are the 1.4%% where fusion actually decides.")
     p.add_argument("--no-color", action="store_true")
     return p.parse_args()
 
@@ -106,7 +110,32 @@ def main():
         folds = build_or_load_kfolds(TIF_ROOT, FOLDS_PATH, k=5)
         split = materialize_fold(folds, args.fold)["test"]
         rng = np.random.default_rng(args.seed)
-        idx = rng.choice(len(split["files"]), size=min(args.random, len(split["files"])), replace=False)
+        pool = np.arange(len(split["files"]))
+
+        if args.disagreements:
+            # Read the branch predictions this fold already saved, so finding the
+            # disagreements is instant rather than a full forward pass over the split.
+            npz = PROJECT_ROOT / "results" / "cv" / args.tag / "fold_{}_preds.npz".format(args.fold)
+            if not npz.exists():
+                raise FileNotFoundError(
+                    "--disagreements needs {} (written by run_cross_validation.py)".format(npz))
+            d = np.load(npz)
+            pool = np.where(d["pred_rgb"] != d["pred_spectral"])[0]
+            if len(pool) == 0:
+                raise SystemExit("no branch disagreements in this fold")
+            # prefer cases where fusion RESOLVED the disagreement correctly -- that is
+            # the mechanism worth showing, and it is the majority (73% of disagreements)
+            resolved = pool[d["pred_c1"][pool] == d["y"][pool]]
+            if len(resolved) >= args.random:
+                pool = resolved
+            print("{}{} of {} test tiles have branch disagreement ({:.2%}); "
+                  "fusion resolves {:.1%} of them correctly{}".format(
+                      DIM, len(np.where(d["pred_rgb"] != d["pred_spectral"])[0]), len(d["y"]),
+                      len(np.where(d["pred_rgb"] != d["pred_spectral"])[0]) / len(d["y"]),
+                      (d["pred_c1"][np.where(d["pred_rgb"] != d["pred_spectral"])[0]]
+                       == d["y"][np.where(d["pred_rgb"] != d["pred_spectral"])[0]]).mean(), OFF))
+
+        idx = rng.choice(pool, size=min(args.random, len(pool)), replace=False)
         files = [split["files"][i] for i in idx]
         labels = [split["labels"][i] for i in idx]
 
