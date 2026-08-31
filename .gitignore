@@ -1,0 +1,34 @@
+# --- Data: 2 GB of EuroSAT GeoTIFFs, re-downloadable ---
+# scripts/download_eurosat.py fetches and extracts to exactly this path.
+lulc-project/data/eurosat/
+
+# --- Split / fold definitions ---
+# Deliberately NOT tracked. They store ABSOLUTE file paths from the machine that
+# built them, so a clone would try to read someone else's directories and fail.
+# They regenerate identically anyway: build_or_load_kfolds() uses StratifiedKFold
+# with a fixed seed over a sorted file listing, so the same seed reproduces the
+# same folds bit-for-bit. See src/data/splits.py.
+lulc-project/data/*.json
+
+# --- Trained weights: 3.1 GB across 82 checkpoints ---
+lulc-project/checkpoints/
+*.pt
+*.pt.tmp
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# NOTE: lulc-project/results/ IS tracked (~14 MB). The per-fold metrics, the
+# per-sample prediction dumps and the figures are what make the statistical
+# analysis reproducible without re-running 40+ GPU-hours of training.

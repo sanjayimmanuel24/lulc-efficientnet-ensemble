@@ -1,0 +1,70 @@
+{
+  "fold": 1,
+  "tag": "lowdata10",
+  "spectral_branch_mode": "rgb_plus_indices",
+  "spectral_in_chans": 4,
+  "variants": {
+    "rgb_branch_only": {
+      "accuracy": 0.9727777777777777,
+      "macro_f1": 0.9718380685794514,
+      "weighted_f1": 0.972670320896318,
+      "macro_precision": 0.9727521577281859,
+      "macro_recall": 0.9712500000000001,
+      "cohen_kappa": 0.9696973167351893,
+      "roc_auc_ovr": 0.9990996490079365,
+      "ece": 0.009338336029538388,
+      "brier": 0.04235339138837791
+    },
+    "spectral_branch_only": {
+      "accuracy": 0.9768518518518519,
+      "macro_f1": 0.9761406596705706,
+      "weighted_f1": 0.9768226724616396,
+      "macro_precision": 0.9759909915500267,
+      "macro_recall": 0.9765499999999999,
+      "cohen_kappa": 0.9742381161383891,
+      "roc_auc_ovr": 0.9987197196145126,
+      "ece": 0.005068914539836117,
+      "brier": 0.036969681719355156
+    },
+    "fixed_average_50_50": {
+      "accuracy": 0.9840740740740741,
+      "macro_f1": 0.983465936019521,
+      "weighted_f1": 0.9840367742585381,
+      "macro_precision": 0.9838468444713231,
+      "macro_recall": 0.9832499999999997,
+      "cohen_kappa": 0.9822735913154339,
+      "roc_auc_ovr": 0.9995224333616779,
+      "ece": 0.01024493072871812,
+      "brier": 0.0305649383371013
+    },
+    "c1_confidence_fusion": {
+      "accuracy": 0.9840740740740741,
+      "macro_f1": 0.9834820927325879,
+      "weighted_f1": 0.9840359819766167,
+      "macro_precision": 0.9838348380950404,
+      "macro_recall": 0.9832833333333333,
+      "cohen_kappa": 0.9822736589778726,
+      "roc_auc_ovr": 0.9995317920918367,
+      "ece": 0.007897939641623213,
+      "brier": 0.029584345825041637
+    }
+  },
+  "t_rgb": 0.5857525221691713,
+  "t_spectral": 0.6040782306300196,
+  "weight_rgb_mean": 0.500698547806692,
+  "weight_rgb_std": 0.025481738456287005,
+  "branch_agreement_rate": 0.9703703703703703,
+  "train_minutes": 18.818703194459278,
+  "train_subset_frac": 0.1,
+  "n_train": 1778,
+  "epochs_per_stage": [
+    5,
+    5,
+    10
+  ],
+  "image_sizes": [
+    128,
+    160,
+    224
+  ]
+}

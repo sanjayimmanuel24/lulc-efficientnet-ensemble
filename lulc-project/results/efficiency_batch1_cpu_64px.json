@@ -1,0 +1,68 @@
+{
+  "device": "cpu",
+  "image_size": 64,
+  "batch_size": 1,
+  "torch": "2.13.0+cu126",
+  "gpu": null,
+  "note": "macs are multiply-accumulates; FLOPs = 2 x MACs under the common convention",
+  "variants": {
+    "single_b0_rgb_only": {
+      "params_total": 4020363,
+      "params_trainable": 4020363,
+      "params_millions": 4.02,
+      "model_size_mb_fp32": 16.08,
+      "macs": 63971584,
+      "gmacs_per_batch": 0.064,
+      "gmacs_per_image": 0.064,
+      "latency_s_per_batch": 0.00988,
+      "latency_ms_per_image": 9.876,
+      "throughput_img_per_s": 101.3,
+      "peak_vram_mb": null
+    },
+    "dual_branch_eca": {
+      "params_total": 8041014,
+      "params_trainable": 8041014,
+      "params_millions": 8.041,
+      "model_size_mb_fp32": 32.16,
+      "macs": 128532992,
+      "gmacs_per_batch": 0.129,
+      "gmacs_per_image": 0.1285,
+      "latency_s_per_batch": 0.02154,
+      "latency_ms_per_image": 21.539,
+      "throughput_img_per_s": 46.4,
+      "peak_vram_mb": null
+    },
+    "dual_branch_no_attention": {
+      "params_total": 8041004,
+      "params_trainable": 8041004,
+      "params_millions": 8.041,
+      "model_size_mb_fp32": 32.16,
+      "macs": 128507392,
+      "gmacs_per_batch": 0.129,
+      "gmacs_per_image": 0.1285,
+      "latency_s_per_batch": 0.02076,
+      "latency_ms_per_image": 20.764,
+      "throughput_img_per_s": 48.2,
+      "peak_vram_mb": null
+    },
+    "dual_branch_nonrgb_eca": {
+      "params_total": 8040726,
+      "params_trainable": 8040726,
+      "params_millions": 8.041,
+      "model_size_mb_fp32": 32.16,
+      "macs": 127943168,
+      "gmacs_per_batch": 0.128,
+      "gmacs_per_image": 0.1279,
+      "latency_s_per_batch": 0.02069,
+      "latency_ms_per_image": 20.691,
+      "throughput_img_per_s": 48.3,
+      "peak_vram_mb": null
+    }
+  },
+  "summary": {
+    "dual_vs_single_param_ratio": 2.0,
+    "eca_params_total": 10,
+    "eca_params_as_fraction_of_model": 1.2436242493794937e-06,
+    "dual_vs_single_latency_ratio": 2.18
+  }
+}

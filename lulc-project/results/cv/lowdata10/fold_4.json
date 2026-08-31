@@ -1,0 +1,70 @@
+{
+  "fold": 4,
+  "tag": "lowdata10",
+  "spectral_branch_mode": "rgb_plus_indices",
+  "spectral_in_chans": 4,
+  "variants": {
+    "rgb_branch_only": {
+      "accuracy": 0.9737037037037037,
+      "macro_f1": 0.9726040840959979,
+      "weighted_f1": 0.9736614050584086,
+      "macro_precision": 0.9742855677802453,
+      "macro_recall": 0.9713666666666667,
+      "cohen_kappa": 0.9707251146294253,
+      "roc_auc_ovr": 0.9984941787414966,
+      "ece": 0.0064036148234650385,
+      "brier": 0.04180562836560759
+    },
+    "spectral_branch_only": {
+      "accuracy": 0.9777777777777777,
+      "macro_f1": 0.9771178742704582,
+      "weighted_f1": 0.9778135227142576,
+      "macro_precision": 0.977735670580252,
+      "macro_recall": 0.9766,
+      "cohen_kappa": 0.9752645320873986,
+      "roc_auc_ovr": 0.9984186755385489,
+      "ece": 0.005695805439242566,
+      "brier": 0.036366052893601425
+    },
+    "fixed_average_50_50": {
+      "accuracy": 0.9814814814814815,
+      "macro_f1": 0.9806404977901183,
+      "weighted_f1": 0.9814702507667161,
+      "macro_precision": 0.9819058765987224,
+      "macro_recall": 0.9796333333333334,
+      "cohen_kappa": 0.979384985397698,
+      "roc_auc_ovr": 0.9992734353174603,
+      "ece": 0.0077189106687352,
+      "brier": 0.03061636919155705
+    },
+    "c1_confidence_fusion": {
+      "accuracy": 0.9816666666666667,
+      "macro_f1": 0.9808258169329985,
+      "weighted_f1": 0.9816572105030921,
+      "macro_precision": 0.9820726786327704,
+      "macro_recall": 0.9798333333333333,
+      "cohen_kappa": 0.9795912134562085,
+      "roc_auc_ovr": 0.9992721602607709,
+      "ece": 0.005594700189291191,
+      "brier": 0.029960976547667103
+    }
+  },
+  "t_rgb": 0.599907337078863,
+  "t_spectral": 0.611375890921991,
+  "weight_rgb_mean": 0.4992952157143598,
+  "weight_rgb_std": 0.01998084919317823,
+  "branch_agreement_rate": 0.9731481481481481,
+  "train_minutes": 18.518829230467478,
+  "train_subset_frac": 0.1,
+  "n_train": 1778,
+  "epochs_per_stage": [
+    5,
+    5,
+    10
+  ],
+  "image_sizes": [
+    128,
+    160,
+    224
+  ]
+}

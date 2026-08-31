@@ -1,0 +1,36 @@
+{
+  "a": "lowdata10:c1_confidence_fusion",
+  "b": "lowdata10:spectral_branch_only",
+  "n_samples": 27000,
+  "n_folds": 5,
+  "accuracy_a": 0.9818888888888889,
+  "accuracy_b": 0.9768518518518519,
+  "per_fold_accuracy_a": [
+    0.982037037037037,
+    0.9840740740740741,
+    0.9829629629629629,
+    0.9787037037037037,
+    0.9816666666666667
+  ],
+  "per_fold_accuracy_b": [
+    0.9783333333333334,
+    0.9768518518518519,
+    0.9768518518518519,
+    0.9744444444444444,
+    0.9777777777777777
+  ],
+  "mean_fold_difference": 0.0050370370370370395,
+  "mcnemar_p": 2.188196407959918e-14,
+  "a_right_b_wrong": 229,
+  "b_right_a_wrong": 93,
+  "paired_t_stat": 7.259142972497309,
+  "paired_t_p": 0.001912361990393881,
+  "cohens_d": 3.246387428978774,
+  "bootstrap_ci": [
+    0.0038888888888888975,
+    0.006333333333333346
+  ],
+  "verdict": "A beats B (McNemar p<0.05)",
+  "mcnemar_n_discordant": 322.0,
+  "mcnemar_test": "exact binomial (not chi-square)"
+}

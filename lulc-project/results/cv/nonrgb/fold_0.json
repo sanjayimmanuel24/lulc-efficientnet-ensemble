@@ -1,0 +1,68 @@
+{
+  "fold": 0,
+  "tag": "nonrgb",
+  "spectral_branch_mode": "nonrgb",
+  "spectral_in_chans": 3,
+  "variants": {
+    "rgb_branch_only": {
+      "accuracy": 0.9716666666666667,
+      "macro_f1": 0.9724126537165552,
+      "weighted_f1": 0.9714431033049029,
+      "macro_precision": 0.9736369105831614,
+      "macro_recall": 0.97325,
+      "cohen_kappa": 0.9684696202386722,
+      "roc_auc_ovr": 0.9970531778911566,
+      "ece": 0.012514984657367018,
+      "brier": 0.04454321291484075
+    },
+    "spectral_branch_only": {
+      "accuracy": 0.9872222222222222,
+      "macro_f1": 0.9864791301412952,
+      "weighted_f1": 0.9871906599623105,
+      "macro_precision": 0.9877054793766664,
+      "macro_recall": 0.9854666666666665,
+      "cohen_kappa": 0.9857756399244116,
+      "roc_auc_ovr": 0.998499952154195,
+      "ece": 0.00408333643719007,
+      "brier": 0.022027770642153614
+    },
+    "fixed_average_50_50": {
+      "accuracy": 0.9925925925925926,
+      "macro_f1": 0.992207225888459,
+      "weighted_f1": 0.992588717836944,
+      "macro_precision": 0.9926943511218289,
+      "macro_recall": 0.9917666666666666,
+      "cohen_kappa": 0.9917549384483252,
+      "roc_auc_ovr": 0.9997158276502267,
+      "ece": 0.02042186421376687,
+      "brier": 0.020078054523992313
+    },
+    "c1_confidence_fusion": {
+      "accuracy": 0.9925925925925926,
+      "macro_f1": 0.992207225888459,
+      "weighted_f1": 0.992588717836944,
+      "macro_precision": 0.9926943511218289,
+      "macro_recall": 0.9917666666666666,
+      "cohen_kappa": 0.9917549384483252,
+      "roc_auc_ovr": 0.9997177328798186,
+      "ece": 0.01641577122387515,
+      "brier": 0.016612097139898467
+    }
+  },
+  "t_rgb": 0.6724424723953062,
+  "t_spectral": 0.5827455849592114,
+  "weight_rgb_mean": 0.49124721306228836,
+  "weight_rgb_std": 0.029765634039340277,
+  "branch_agreement_rate": 0.965,
+  "train_minutes": 46.66123276551564,
+  "epochs_per_stage": [
+    5,
+    5,
+    10
+  ],
+  "image_sizes": [
+    128,
+    160,
+    224
+  ]
+}

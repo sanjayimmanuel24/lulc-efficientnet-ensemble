@@ -1,0 +1,36 @@
+{
+  "a": "default:spectral_branch_only",
+  "b": "default:rgb_branch_only",
+  "n_samples": 27000,
+  "n_folds": 5,
+  "accuracy_a": 0.9885925925925926,
+  "accuracy_b": 0.9876296296296296,
+  "per_fold_accuracy_a": [
+    0.9894444444444445,
+    0.9898148148148148,
+    0.99,
+    0.9896296296296296,
+    0.9840740740740741
+  ],
+  "per_fold_accuracy_b": [
+    0.9837037037037037,
+    0.9903703703703703,
+    0.99,
+    0.9883333333333333,
+    0.9857407407407407
+  ],
+  "mean_fold_difference": 0.0009629629629629877,
+  "mcnemar_p": 0.1948423724443492,
+  "a_right_b_wrong": 199,
+  "b_right_a_wrong": 173,
+  "paired_t_stat": 0.7486859688372057,
+  "paired_t_p": 0.49566908324711817,
+  "cohens_d": 0.3348225440240562,
+  "bootstrap_ci": [
+    -0.0008888888888888502,
+    0.003444444444444428
+  ],
+  "verdict": "no significant difference (McNemar p>=0.05)",
+  "mcnemar_n_discordant": 372.0,
+  "mcnemar_test": "exact binomial (not chi-square)"
+}

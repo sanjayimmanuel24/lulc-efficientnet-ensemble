@@ -1,0 +1,79 @@
+{
+  "fold": 2,
+  "tag": "baseline_resnet50",
+  "spectral_branch_mode": "rgb_plus_indices",
+  "spectral_in_chans": 4,
+  "attention": "eca",
+  "baseline_backbone": "resnet50",
+  "seed": 42,
+  "augment": false,
+  "calibration_split_frac": 0.0,
+  "variants": {
+    "rgb_branch_only": {
+      "accuracy": 0.9894444444444445,
+      "macro_f1": 0.9890565051444643,
+      "weighted_f1": 0.9894343173656786,
+      "macro_precision": 0.9890579121633347,
+      "macro_recall": 0.9890666666666666,
+      "cohen_kappa": 0.9882518635567311,
+      "roc_auc_ovr": 0.9994957053287982,
+      "ece": 0.0031746270976684347,
+      "ece_adaptive": 0.0066180162186975835,
+      "brier": 0.018719217766629815
+    },
+    "spectral_branch_only": {
+      "accuracy": 0.9894444444444445,
+      "macro_f1": 0.9890565051444643,
+      "weighted_f1": 0.9894343173656786,
+      "macro_precision": 0.9890579121633347,
+      "macro_recall": 0.9890666666666666,
+      "cohen_kappa": 0.9882518635567311,
+      "roc_auc_ovr": 0.9994957053287982,
+      "ece": 0.0031746270976684347,
+      "ece_adaptive": 0.0066180162186975835,
+      "brier": 0.018719217766629815
+    },
+    "fixed_average_50_50": {
+      "accuracy": 0.9894444444444445,
+      "macro_f1": 0.9890565051444643,
+      "weighted_f1": 0.9894343173656786,
+      "macro_precision": 0.9890579121633347,
+      "macro_recall": 0.9890666666666666,
+      "cohen_kappa": 0.9882518635567311,
+      "roc_auc_ovr": 0.9994957053287982,
+      "ece": 0.0031746270976684347,
+      "ece_adaptive": 0.0066180162186975835,
+      "brier": 0.018719217766629815
+    },
+    "c1_confidence_fusion": {
+      "accuracy": 0.9894444444444445,
+      "macro_f1": 0.9890565051444643,
+      "weighted_f1": 0.9894343173656786,
+      "macro_precision": 0.9890579121633347,
+      "macro_recall": 0.9890666666666666,
+      "cohen_kappa": 0.9882518635567311,
+      "roc_auc_ovr": 0.9994957053287982,
+      "ece": 0.003174606370244429,
+      "ece_adaptive": 0.006620022427015648,
+      "brier": 0.018719217744104875
+    }
+  },
+  "t_rgb": 0.5879743455924274,
+  "t_spectral": 0.5879743455924274,
+  "weight_rgb_mean": 0.49999999744170553,
+  "weight_rgb_std": 1.2762832226845242e-10,
+  "branch_agreement_rate": 1.0,
+  "train_minutes": 49.132999408245084,
+  "train_subset_frac": 1.0,
+  "n_train": 17787,
+  "epochs_per_stage": [
+    5,
+    5,
+    10
+  ],
+  "image_sizes": [
+    128,
+    160,
+    224
+  ]
+}

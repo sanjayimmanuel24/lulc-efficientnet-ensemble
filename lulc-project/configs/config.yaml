@@ -1,0 +1,36 @@
+seed: 42
+
+data:
+  dataset: "EuroSAT-MS"          # primary dataset (see docs/BLUEPRINT.md section on datasets)
+  secondary_dataset: "RESISC45"  # cross-dataset generalization only, not used for training
+  spectral_indices: ["ndvi"]     # start with NDVI only; NDVI+NDWI is an ablation, not the default
+  spectral_branch_mode: "rgb_plus_indices"   # rgb_plus_indices | nonrgb | indices_only
+  image_sizes: [128, 160, 224]   # progressive resizing stages
+
+model:
+  backbone: "efficientnet_b0"
+  num_classes: 10
+  attention: "eca"                # eca | none  (see ablation: attention variant)
+  pretrained: true
+
+train:
+  epochs_per_stage: [5, 5, 10]
+  batch_size: 32                  # 32, not 64: 224px peaks at 3.07 GB on a 4 GB RTX 3050
+  num_workers: 2                  # 4 exhausts the Windows commit limit at 224px on 7.3 GB RAM
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  warmup_epochs: 2
+  label_smoothing: 0.1
+  grad_clip_norm: 5.0
+  early_stopping_patience: 5
+  mixed_precision: true
+  branch_loss_weight_rgb: 1.0
+  branch_loss_weight_spectral: 1.0
+
+evaluation:
+  k_folds: 5
+  bootstrap_samples: 10000
+  confidence_level: 0.95
+
+calibration:
+  method: "temperature_scaling"

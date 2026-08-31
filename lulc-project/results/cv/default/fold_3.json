@@ -1,0 +1,68 @@
+{
+  "fold": 3,
+  "tag": "default",
+  "spectral_branch_mode": "rgb_plus_indices",
+  "spectral_in_chans": 4,
+  "variants": {
+    "rgb_branch_only": {
+      "accuracy": 0.9883333333333333,
+      "macro_f1": 0.9879938729931311,
+      "weighted_f1": 0.9883232244817692,
+      "macro_precision": 0.9882289670691533,
+      "macro_recall": 0.9878000000000002,
+      "cohen_kappa": 0.9870146724277448,
+      "roc_auc_ovr": 0.9990220457199547,
+      "ece": 0.0036455495765915394,
+      "brier": 0.019369113041764467
+    },
+    "spectral_branch_only": {
+      "accuracy": 0.9896296296296296,
+      "macro_f1": 0.9890290282266696,
+      "weighted_f1": 0.9896157721655147,
+      "macro_precision": 0.9894626867887204,
+      "macro_recall": 0.9886666666666667,
+      "cohen_kappa": 0.9884570460114972,
+      "roc_auc_ovr": 0.9991924800453514,
+      "ece": 0.0030516130946300363,
+      "brier": 0.017907251829608572
+    },
+    "fixed_average_50_50": {
+      "accuracy": 0.992037037037037,
+      "macro_f1": 0.9918239975601975,
+      "weighted_f1": 0.9920300042227993,
+      "macro_precision": 0.9920237773304784,
+      "macro_recall": 0.9916666666666666,
+      "cohen_kappa": 0.9911370663002405,
+      "roc_auc_ovr": 0.9995319678854875,
+      "ece": 0.004318069318930324,
+      "brier": 0.014390800833223649
+    },
+    "c1_confidence_fusion": {
+      "accuracy": 0.9918518518518519,
+      "macro_f1": 0.9916242188386665,
+      "weighted_f1": 0.9918450239250859,
+      "macro_precision": 0.9918186437279747,
+      "macro_recall": 0.9914666666666667,
+      "cohen_kappa": 0.9909309515630368,
+      "roc_auc_ovr": 0.9995332322845805,
+      "ece": 0.0040520520158251255,
+      "brier": 0.014151408450352692
+    }
+  },
+  "t_rgb": 0.5977306770758501,
+  "t_spectral": 0.5808000001113816,
+  "weight_rgb_mean": 0.49978818594237306,
+  "weight_rgb_std": 0.011309900051560524,
+  "branch_agreement_rate": 0.9890740740740741,
+  "train_minutes": 59.5783177336057,
+  "epochs_per_stage": [
+    5,
+    5,
+    10
+  ],
+  "image_sizes": [
+    128,
+    160,
+    224
+  ]
+}

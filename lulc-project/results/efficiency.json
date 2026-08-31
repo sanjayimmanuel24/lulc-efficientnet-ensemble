@@ -1,0 +1,68 @@
+{
+  "device": "cuda",
+  "image_size": 224,
+  "batch_size": 32,
+  "torch": "2.13.0+cu126",
+  "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "note": "macs are multiply-accumulates; FLOPs = 2 x MACs under the common convention",
+  "variants": {
+    "single_b0_rgb_only": {
+      "params_total": 4020363,
+      "params_trainable": 4020363,
+      "params_millions": 4.02,
+      "model_size_mb_fp32": 16.08,
+      "macs": 24611452928,
+      "gmacs_per_batch": 24.611,
+      "gmacs_per_image": 0.7691,
+      "latency_s_per_batch": 0.04531,
+      "latency_ms_per_image": 1.416,
+      "throughput_img_per_s": 706.2,
+      "peak_vram_mb": 433.7
+    },
+    "dual_branch_eca": {
+      "params_total": 8041014,
+      "params_trainable": 8041014,
+      "params_millions": 8.041,
+      "model_size_mb_fp32": 32.16,
+      "macs": 49454116864,
+      "gmacs_per_batch": 49.454,
+      "gmacs_per_image": 1.5454,
+      "latency_s_per_batch": 0.09193,
+      "latency_ms_per_image": 2.873,
+      "throughput_img_per_s": 348.1,
+      "peak_vram_mb": 475.7
+    },
+    "dual_branch_no_attention": {
+      "params_total": 8041004,
+      "params_trainable": 8041004,
+      "params_millions": 8.041,
+      "model_size_mb_fp32": 32.16,
+      "macs": 49453297664,
+      "gmacs_per_batch": 49.453,
+      "gmacs_per_image": 1.5454,
+      "latency_s_per_batch": 0.0917,
+      "latency_ms_per_image": 2.865,
+      "throughput_img_per_s": 349.0,
+      "peak_vram_mb": 475.7
+    },
+    "dual_branch_nonrgb_eca": {
+      "params_total": 8040726,
+      "params_trainable": 8040726,
+      "params_millions": 8.041,
+      "model_size_mb_fp32": 32.16,
+      "macs": 49222905856,
+      "gmacs_per_batch": 49.223,
+      "gmacs_per_image": 1.5382,
+      "latency_s_per_batch": 0.09217,
+      "latency_ms_per_image": 2.88,
+      "throughput_img_per_s": 347.2,
+      "peak_vram_mb": 469.3
+    }
+  },
+  "summary": {
+    "dual_vs_single_param_ratio": 2.0,
+    "eca_params_total": 10,
+    "eca_params_as_fraction_of_model": 1.2436242493794937e-06,
+    "dual_vs_single_latency_ratio": 2.029
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "a": "default:rgb_branch_only",
+  "b": "baseline_resnet50:rgb_branch_only",
+  "n_samples": 27000,
+  "n_folds": 5,
+  "accuracy_a": 0.9876296296296296,
+  "accuracy_b": 0.9863703703703703,
+  "per_fold_accuracy_a": [
+    0.9837037037037037,
+    0.9903703703703703,
+    0.99,
+    0.9883333333333333,
+    0.9857407407407407
+  ],
+  "per_fold_accuracy_b": [
+    0.9851851851851852,
+    0.9864814814814815,
+    0.9894444444444445,
+    0.985,
+    0.9857407407407407
+  ],
+  "mean_fold_difference": 0.0012592592592592488,
+  "mcnemar_n_discordant": 432.0,
+  "mcnemar_p": 0.11224581997783341,
+  "mcnemar_test": "exact binomial (not chi-square)",
+  "a_right_b_wrong": 233,
+  "b_right_a_wrong": 199,
+  "paired_t_stat": 1.234528511623728,
+  "paired_t_p": 0.28457229349821,
+  "cohens_d": 0.552097934430459,
+  "bootstrap_ci": [
+    -0.0004814814814814605,
+    0.0029999999999999584
+  ],
+  "verdict": "no significant difference (McNemar p>=0.05)"
+}

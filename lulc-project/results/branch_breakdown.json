@@ -1,0 +1,91 @@
+{
+  "variants": {
+    "rgb_branch_only": {
+      "accuracy": 0.9609876543209876,
+      "macro_f1": 0.9632050212207858,
+      "weighted_f1": 0.9607827137483007,
+      "macro_precision": 0.9693208908302833,
+      "macro_recall": 0.9629555555555556,
+      "cohen_kappa": 0.9565763959222935,
+      "roc_auc_ovr": 0.9991461446208113,
+      "ece": 0.020538236932989982,
+      "brier": 0.05131197728913133
+    },
+    "spectral_branch_only": {
+      "accuracy": 0.991358024691358,
+      "macro_f1": 0.9907058356614936,
+      "weighted_f1": 0.9913482092930633,
+      "macro_precision": 0.9909261571388106,
+      "macro_recall": 0.9905111111111111,
+      "cohen_kappa": 0.9903813367397312,
+      "roc_auc_ovr": 0.9995272113378684,
+      "ece": 0.0043116056624753945,
+      "brier": 0.015383831259843266
+    },
+    "fixed_average_50_50": {
+      "accuracy": 0.9918518518518519,
+      "macro_f1": 0.9914494240293422,
+      "weighted_f1": 0.9918503357749765,
+      "macro_precision": 0.9917423527514065,
+      "macro_recall": 0.9911777777777779,
+      "cohen_kappa": 0.9909307900187797,
+      "roc_auc_ovr": 0.9996290054421768,
+      "ece": 0.019658209306222394,
+      "brier": 0.021335723863423785
+    },
+    "c1_confidence_fusion": {
+      "accuracy": 0.9916049382716049,
+      "macro_f1": 0.9912063123153665,
+      "weighted_f1": 0.9916044056051239,
+      "macro_precision": 0.991475867199768,
+      "macro_recall": 0.9909555555555556,
+      "cohen_kappa": 0.9906560130286528,
+      "roc_auc_ovr": 0.9996569262786597,
+      "ece": 0.01166145796211104,
+      "brier": 0.01492488642082363
+    }
+  },
+  "mcnemar_vs_c1": {
+    "fixed_average_50_50": {
+      "mcnemar_stat": 1.0,
+      "p_value": 1.0,
+      "c1_right_other_wrong": 0,
+      "c1_wrong_other_right": 1
+    },
+    "rgb_branch_only": {
+      "mcnemar_stat": 138.0,
+      "p_value": 9.815829609038498e-31,
+      "c1_right_other_wrong": 131,
+      "c1_wrong_other_right": 7
+    },
+    "spectral_branch_only": {
+      "mcnemar_stat": 19.0,
+      "p_value": 1.0,
+      "c1_right_other_wrong": 10,
+      "c1_wrong_other_right": 9
+    }
+  },
+  "t_rgb": 0.6505885694786349,
+  "t_spectral": 0.6056023400608469,
+  "weight_rgb": {
+    "mean": 0.48790671271632974,
+    "std": 0.04806538442248477,
+    "min": 0.10692568474839298,
+    "max": 0.6802097325003086
+  },
+  "branch_agreement_rate": 0.9607407407407408,
+  "per_class_recall_c1": {
+    "AnnualCrop": 0.9866666666666667,
+    "Forest": 1.0,
+    "HerbaceousVegetation": 0.9911111111111112,
+    "Highway": 0.9973333333333333,
+    "Industrial": 0.9946666666666667,
+    "Pasture": 0.9766666666666667,
+    "PermanentCrop": 0.9733333333333334,
+    "Residential": 0.9977777777777778,
+    "River": 0.992,
+    "SeaLake": 1.0
+  },
+  "image_size": 224,
+  "checkpoint": "dual_branch_best.pt"
+}

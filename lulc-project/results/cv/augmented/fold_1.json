@@ -1,0 +1,79 @@
+{
+  "fold": 1,
+  "tag": "augmented",
+  "spectral_branch_mode": "rgb_plus_indices",
+  "spectral_in_chans": 4,
+  "attention": "eca",
+  "baseline_backbone": null,
+  "seed": 42,
+  "augment": true,
+  "calibration_split_frac": 0.0,
+  "variants": {
+    "rgb_branch_only": {
+      "accuracy": 0.9883333333333333,
+      "macro_f1": 0.9880994225069519,
+      "weighted_f1": 0.9883379085302648,
+      "macro_precision": 0.987946508394238,
+      "macro_recall": 0.9883166666666666,
+      "cohen_kappa": 0.9870159609791843,
+      "roc_auc_ovr": 0.9993673859410432,
+      "ece": 0.003670190716231268,
+      "ece_adaptive": 0.008628761304749379,
+      "brier": 0.019580664829742328
+    },
+    "spectral_branch_only": {
+      "accuracy": 0.9907407407407407,
+      "macro_f1": 0.9903780110669823,
+      "weighted_f1": 0.9907348838714476,
+      "macro_precision": 0.9903738282863543,
+      "macro_recall": 0.9903999999999998,
+      "cohen_kappa": 0.9896946958217717,
+      "roc_auc_ovr": 0.999769604223356,
+      "ece": 0.003692803029660864,
+      "ece_adaptive": 0.006530767370153369,
+      "brier": 0.015531095049617487
+    },
+    "fixed_average_50_50": {
+      "accuracy": 0.9948148148148148,
+      "macro_f1": 0.9946522138530275,
+      "weighted_f1": 0.9948159259407237,
+      "macro_precision": 0.9945252357185963,
+      "macro_recall": 0.9947833333333331,
+      "cohen_kappa": 0.9942291618162874,
+      "roc_auc_ovr": 0.999952604988662,
+      "ece": 0.00834816272611966,
+      "ece_adaptive": 0.008184549554630566,
+      "brier": 0.011591075821741173
+    },
+    "c1_confidence_fusion": {
+      "accuracy": 0.9948148148148148,
+      "macro_f1": 0.9946522138530275,
+      "weighted_f1": 0.9948159259407237,
+      "macro_precision": 0.9945252357185963,
+      "macro_recall": 0.9947833333333331,
+      "cohen_kappa": 0.9942291618162874,
+      "roc_auc_ovr": 0.999953748185941,
+      "ece": 0.007343375784735121,
+      "ece_adaptive": 0.00734337578473483,
+      "brier": 0.010931095799908619
+    }
+  },
+  "t_rgb": 0.5714803577364262,
+  "t_spectral": 0.586648207663855,
+  "weight_rgb_mean": 0.4997598459423688,
+  "weight_rgb_std": 0.011996957270875946,
+  "branch_agreement_rate": 0.9842592592592593,
+  "train_minutes": 54.28785716295242,
+  "train_subset_frac": 1.0,
+  "n_train": 17787,
+  "epochs_per_stage": [
+    5,
+    5,
+    10
+  ],
+  "image_sizes": [
+    128,
+    160,
+    224
+  ]
+}

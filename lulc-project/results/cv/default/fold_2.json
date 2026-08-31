@@ -1,0 +1,68 @@
+{
+  "fold": 2,
+  "tag": "default",
+  "spectral_branch_mode": "rgb_plus_indices",
+  "spectral_in_chans": 4,
+  "variants": {
+    "rgb_branch_only": {
+      "accuracy": 0.99,
+      "macro_f1": 0.9895051565606907,
+      "weighted_f1": 0.9899941677828705,
+      "macro_precision": 0.989813548071572,
+      "macro_recall": 0.9892333333333335,
+      "cohen_kappa": 0.9888696767396855,
+      "roc_auc_ovr": 0.9990785744614511,
+      "ece": 0.002298266424073143,
+      "brier": 0.017314505173146325
+    },
+    "spectral_branch_only": {
+      "accuracy": 0.99,
+      "macro_f1": 0.989446109292239,
+      "weighted_f1": 0.9899829570387724,
+      "macro_precision": 0.990071528591077,
+      "macro_recall": 0.9889166666666667,
+      "cohen_kappa": 0.9888690394393294,
+      "roc_auc_ovr": 0.9991869133361678,
+      "ece": 0.0035275897273310828,
+      "brier": 0.01752926273624543
+    },
+    "fixed_average_50_50": {
+      "accuracy": 0.9924074074074074,
+      "macro_f1": 0.9919148365456192,
+      "weighted_f1": 0.9923955311513402,
+      "macro_precision": 0.9923343085668691,
+      "macro_recall": 0.9915333333333333,
+      "cohen_kappa": 0.9915489732040614,
+      "roc_auc_ovr": 0.9994770024376418,
+      "ece": 0.004313915526425411,
+      "brier": 0.013621912360795144
+    },
+    "c1_confidence_fusion": {
+      "accuracy": 0.9922222222222222,
+      "macro_f1": 0.9917309668449796,
+      "weighted_f1": 0.9922101420415105,
+      "macro_precision": 0.9921703716673657,
+      "macro_recall": 0.9913333333333332,
+      "cohen_kappa": 0.9913428175540787,
+      "roc_auc_ovr": 0.9994781331349205,
+      "ece": 0.0034840022127476367,
+      "brier": 0.01323120756074299
+    }
+  },
+  "t_rgb": 0.6022652914521808,
+  "t_spectral": 0.5857791124075834,
+  "weight_rgb_mean": 0.4996248856584259,
+  "weight_rgb_std": 0.012936454171974244,
+  "branch_agreement_rate": 0.9903703703703703,
+  "train_minutes": 72.65213864247004,
+  "epochs_per_stage": [
+    5,
+    5,
+    10
+  ],
+  "image_sizes": [
+    128,
+    160,
+    224
+  ]
+}

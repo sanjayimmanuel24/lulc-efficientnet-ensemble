@@ -1,0 +1,68 @@
+{
+  "fold": 4,
+  "tag": "default",
+  "spectral_branch_mode": "rgb_plus_indices",
+  "spectral_in_chans": 4,
+  "variants": {
+    "rgb_branch_only": {
+      "accuracy": 0.9857407407407407,
+      "macro_f1": 0.9849476791453599,
+      "weighted_f1": 0.9857242600654684,
+      "macro_precision": 0.9855195877425473,
+      "macro_recall": 0.9844833333333332,
+      "cohen_kappa": 0.984128256513026,
+      "roc_auc_ovr": 0.9991679440617913,
+      "ece": 0.005844237037278965,
+      "brier": 0.024680022973751343
+    },
+    "spectral_branch_only": {
+      "accuracy": 0.9840740740740741,
+      "macro_f1": 0.9828477472779031,
+      "weighted_f1": 0.9840368578978314,
+      "macro_precision": 0.9830120256838566,
+      "macro_recall": 0.98275,
+      "cohen_kappa": 0.9822745385425732,
+      "roc_auc_ovr": 0.9989462320578232,
+      "ece": 0.004041143479170602,
+      "brier": 0.0243159276254318
+    },
+    "fixed_average_50_50": {
+      "accuracy": 0.9896296296296296,
+      "macro_f1": 0.9889840576868872,
+      "weighted_f1": 0.9896289000112938,
+      "macro_precision": 0.9893208606024038,
+      "macro_recall": 0.9887,
+      "cohen_kappa": 0.988457310370099,
+      "roc_auc_ovr": 0.9994903331065761,
+      "ece": 0.006119938073334909,
+      "brier": 0.017961851435421644
+    },
+    "c1_confidence_fusion": {
+      "accuracy": 0.9898148148148148,
+      "macro_f1": 0.9891865002542138,
+      "weighted_f1": 0.9898163468328923,
+      "macro_precision": 0.9895221223802928,
+      "macro_recall": 0.9888999999999999,
+      "cohen_kappa": 0.9886634298277758,
+      "roc_auc_ovr": 0.9994978144841269,
+      "ece": 0.0044366846100324375,
+      "brier": 0.01692163694513249
+    }
+  },
+  "t_rgb": 0.5820623124983509,
+  "t_spectral": 0.5830852101268473,
+  "weight_rgb_mean": 0.5017281567406285,
+  "weight_rgb_std": 0.027236596669862757,
+  "branch_agreement_rate": 0.9811111111111112,
+  "train_minutes": 48.95399264097214,
+  "epochs_per_stage": [
+    5,
+    5,
+    10
+  ],
+  "image_sizes": [
+    128,
+    160,
+    224
+  ]
+}

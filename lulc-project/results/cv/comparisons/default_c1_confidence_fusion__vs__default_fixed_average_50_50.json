@@ -1,0 +1,36 @@
+{
+  "a": "default:c1_confidence_fusion",
+  "b": "default:fixed_average_50_50",
+  "n_samples": 27000,
+  "n_folds": 5,
+  "accuracy_a": 0.9917037037037038,
+  "accuracy_b": 0.9918148148148148,
+  "per_fold_accuracy_a": [
+    0.9918518518518519,
+    0.9927777777777778,
+    0.9922222222222222,
+    0.9918518518518519,
+    0.9898148148148148
+  ],
+  "per_fold_accuracy_b": [
+    0.9922222222222222,
+    0.9927777777777778,
+    0.9924074074074074,
+    0.992037037037037,
+    0.9896296296296296
+  ],
+  "mean_fold_difference": -0.00011111111111110628,
+  "mcnemar_p": 0.453125,
+  "a_right_b_wrong": 2,
+  "b_right_a_wrong": 5,
+  "paired_t_stat": -1.176696810829104,
+  "paired_t_p": 0.3045587846805348,
+  "cohens_d": -0.5262348115842176,
+  "bootstrap_ci": [
+    -0.000259259259259248,
+    3.7037037037035424e-05
+  ],
+  "verdict": "no significant difference (McNemar p>=0.05)",
+  "mcnemar_n_discordant": 7.0,
+  "mcnemar_test": "exact binomial (not chi-square)"
+}

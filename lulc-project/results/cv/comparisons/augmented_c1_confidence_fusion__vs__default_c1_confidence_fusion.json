@@ -1,0 +1,36 @@
+{
+  "a": "augmented:c1_confidence_fusion",
+  "b": "default:c1_confidence_fusion",
+  "n_samples": 27000,
+  "n_folds": 5,
+  "accuracy_a": 0.9933703703703703,
+  "accuracy_b": 0.9917037037037038,
+  "per_fold_accuracy_a": [
+    0.9946296296296296,
+    0.9948148148148148,
+    0.9937037037037038,
+    0.9911111111111112,
+    0.9925925925925926
+  ],
+  "per_fold_accuracy_b": [
+    0.9918518518518519,
+    0.9927777777777778,
+    0.9922222222222222,
+    0.9918518518518519,
+    0.9898148148148148
+  ],
+  "mean_fold_difference": 0.001666666666666683,
+  "mcnemar_n_discordant": 175.0,
+  "mcnemar_p": 0.0008305791597672849,
+  "mcnemar_test": "exact binomial (not chi-square)",
+  "a_right_b_wrong": 110,
+  "b_right_a_wrong": 65,
+  "paired_t_stat": 2.5661967683049602,
+  "paired_t_p": 0.06222858731242718,
+  "cohens_d": 1.1476380835140338,
+  "bootstrap_ci": [
+    0.0004074074074074341,
+    0.0026296296296296263
+  ],
+  "verdict": "A beats B (McNemar p<0.05)"
+}
