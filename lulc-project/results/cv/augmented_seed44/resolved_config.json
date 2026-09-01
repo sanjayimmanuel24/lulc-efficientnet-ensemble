@@ -1,0 +1,59 @@
+{
+  "tag": "augmented_seed44",
+  "spectral_branch_mode": "rgb_plus_indices",
+  "folds": 5,
+  "only_fold": null,
+  "epochs_per_stage": [
+    5,
+    5,
+    10
+  ],
+  "image_sizes": [
+    128,
+    160,
+    224
+  ],
+  "batch_size": 32,
+  "num_workers": 2,
+  "spectral_indices": [
+    "ndvi"
+  ],
+  "lr": 0.0003,
+  "baseline_backbone": null,
+  "seed": 44,
+  "augment": true,
+  "calibration_split_frac": 0.0,
+  "attention": "eca",
+  "pin_memory": false,
+  "train_subset_frac": 1.0,
+  "_config_defaults_applied": [
+    "attention",
+    "batch_size",
+    "epochs_per_stage",
+    "folds",
+    "image_sizes",
+    "lr",
+    "num_workers",
+    "spectral_branch_mode",
+    "spectral_indices"
+  ],
+  "_config_keys_not_consumed": [
+    "calibration.method",
+    "data.dataset",
+    "data.secondary_dataset",
+    "evaluation.bootstrap_samples",
+    "evaluation.confidence_level",
+    "model.backbone",
+    "model.num_classes",
+    "model.pretrained",
+    "train.branch_loss_weight_rgb",
+    "train.branch_loss_weight_spectral",
+    "train.early_stopping_patience",
+    "train.grad_clip_norm",
+    "train.label_smoothing",
+    "train.mixed_precision",
+    "train.warmup_epochs",
+    "train.weight_decay"
+  ],
+  "device": "cuda"
+}

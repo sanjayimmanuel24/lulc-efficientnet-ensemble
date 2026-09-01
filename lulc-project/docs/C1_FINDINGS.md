@@ -36,10 +36,13 @@ bootstrap CIs [+0.0023,+0.0045] and [+0.0014,+0.0046]. This is the paper's stron
 does fall 0.9857 -> 0.9786, so the mechanism is real; the accuracy claim is not. Report the
 agreement change as an observation, not the accuracy delta as a result.
 
-**Augmentation helps, and it is the only training/architecture change that survives everything.**
-Dihedral augmentation (flips + 90-degree rotations, `--augment`) gives **0.9934 +- 0.0015** vs
-`default` 0.9917: +0.0017, McNemar p=0.00083, **Holm-adjusted p=0.00997**, bootstrap CI
-[+0.0004,+0.0026], and 2.4x the seed noise floor. See Section 9.
+**Augmentation helps -- real, consistent, but small.** Dihedral augmentation (flips +
+90-degree rotations, `--augment`). Verified across three seeds (Section 10):
+
+- headline **0.9930 +- 0.0017** pooled over 15 folds (3 seeds x k=5)
+- seed-matched effect **+0.0012**, positive on **3/3** seeds, paired-t p=0.032
+- **Do NOT quote 0.9934** -- that is seed 42 alone, the most favourable of three draws
+  (42/43/44 give 0.9934 / 0.9924 / 0.9932)
 
 **C1 improves calibration over plain averaging** — better ECE on 5/5 folds in *both*
 architectures (paired-t p=0.0127 and p=0.0323) and better Brier on 5/5 folds
@@ -96,7 +99,8 @@ State C1 as a **reported negative result**, which BLUEPRINT Sections 9 and 18 al
 
 Lead the paper with what is significant after correction: decision-level fusion (+0.31pp over
 the best branch, p_adj≈8e-9), the ResNet-50 comparison (+0.54 to +0.70pp, p_adj≈1e-25), and
-augmentation (+0.17pp, p_adj=0.010). Do NOT lead with branch inputs -- see the retraction above.
+augmentation (+0.12pp seed-matched, 3/3 seeds, p=0.032). Do NOT lead with branch inputs -- see
+the retraction above.
 
 ## 5. Low-data ablation: the failure is the mechanism, not the ceiling
 
@@ -263,3 +267,32 @@ branch slightly regressed. So it is a regularisation effect, not a diversity eff
 Single-branch caveat: `noattention_rgb_branch_only` vs `default_rgb_branch_only` survives at
 p_adj = 0.0225 (+0.0019), but it is a single-seed comparison at 2.7x the floor. Do not claim ECA
 hurts without seed-matched `noattention` runs.
+
+
+## 10. Seed verification of the headline configuration
+
+`augmented` re-run at seeds 43 and 44 (`augmented_seed43`, `augmented_seed44`), identical folds.
+
+| config | k=5 mean per seed (42/43/44) | range | sd |
+|---|---|---|---|
+| augmented | 0.9934 / 0.9924 / 0.9932 | 0.0010 | 0.0005 |
+| default | 0.9917 / 0.9914 / 0.9921 | 0.0007 | 0.0004 |
+
+Seed-MATCHED augmentation effect (the correct test -- pairing by seed removes seed variance):
+
+| seed | augmented | default | delta |
+|---|---|---|---|
+| 42 | 0.9934 | 0.9917 | +0.0017 |
+| 43 | 0.9924 | 0.9914 | +0.0010 |
+| 44 | 0.9932 | 0.9921 | +0.0010 |
+
+Mean **+0.0012**, positive on 3/3 seeds, paired-t p=0.032, and 1.2x the augmented config's own
+seed range. Real and consistent, but small -- report it as such.
+
+**Reporting rules this establishes:**
+
+1. The headline is **0.9930 +- 0.0017** (15 folds, 3 seeds). Quoting 0.9934 is quoting the best
+   of three seeds.
+2. Quote both error bars where space allows: fold-level (+-0.0015) and seed-level (+-0.0005).
+3. The single-seed estimate of the augmentation effect (+0.0017) overstated it by ~40%. Any
+   future sub-0.002 effect must be seed-matched before it is claimed.
