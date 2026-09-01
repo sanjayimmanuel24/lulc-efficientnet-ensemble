@@ -35,21 +35,64 @@ None of these four gaps require a fundamentally new architecture to address — 
 
 ## 4. Proposed Novel Framework
 
+> **STATUS AFTER EXPERIMENTS (updated post-hoc).** The C1-C4 statements below are the
+> *pre-registered hypotheses*, kept verbatim as the record of what was predicted before any
+> model was trained. Each now carries a VERDICT line with the measured outcome. Full evidence:
+> `docs/C1_FINDINGS.md`. Protocol: k=5 stratified CV on identical folds, six sweeps, a ResNet-50
+> baseline on the same folds, Holm-Bonferroni over a 20-comparison family, and a seed noise floor
+> measured at 0.0007 from three seeds of an identical configuration.
+>
+> **Two of the four hypotheses failed, one is unsupported, one holds strongly.** What the work
+> actually contributes is stated in Section 14, which has been rewritten accordingly. The failures
+> are reported rather than removed: Sections 9 and 18 committed to that in advance.
+
 Four contributions, deliberately kept to four, chosen so each one is individually defensible **and** so they reinforce rather than merely coexist with each other (a property reviewers notice, and one that's absent from a "kitchen sink" list of 15 unrelated tricks).
 
 ### C1 — Confidence-Aware Adaptive Fusion
 Per-sample fusion weights derived from each branch's own predictive entropy, rather than a fixed or globally-learned scalar. Formal definition in Section 6. Critically, this rule *provably reduces to plain averaging* when both branches are equally confident (tested in `tests/test_fusion_logic.py::test_equal_confidence_reduces_to_simple_average`), which means the "fixed-weight ensemble" baseline is not a separate model to implement — it is this same mechanism with one term ablated, giving a clean, apples-to-apples ablation instead of a reimplementation.
+
+> **VERDICT: NOT SUPPORTED.** No accuracy gain over the fixed 50/50 average it generalises:
+> -0.0001 (default, McNemar p=0.45, Holm-adjusted p=0.906) and -0.0002 (nonrgb, 0 samples right
+> where the average was wrong). Ten folds, two architectures, never ahead. **Mechanism**: mean
+> fusion weight is 0.4995 -- the rule sits at the equal-confidence point where Section 6 proves it
+> *is* plain averaging. Normalised entropy does not separate a correct branch from an incorrect one
+> when both are near-saturated. Tested against the saturation defence with a 10%-data ablation:
+> disagreements doubled, weights did not move (0.4991), effect still zero. C1's surviving claim is
+> calibration only: best ECE (0.0040 equal-mass) and Brier (0.0141) of all variants.
 
 ### C2 — Genuine Multispectral Fusion (RGB + NDVI branch)
 The spectral branch is trained on true Sentinel-2 reflectance bands (Red=B04, NIR=B08 at minimum) via the EuroSAT *multispectral* release, not an approximation of NDVI computed from an RGB JPEG (which is not physically meaningful — RGB has no near-infrared channel). This sounds like a minor implementation detail; it is in fact a common, reviewer-visible mistake in student remote-sensing projects, and getting it right is itself worth stating explicitly in the paper's data section.
 
 This contribution carries a genuine, stated risk, not a guaranteed win: Helber et al. (2019) — the EuroSAT paper itself — found that stacking spectral bands as *extra input channels into one CNN* did not help on this dataset (RGB alone beat every band combination they tested). C2 deliberately tests a different architectural question: whether spectral information helps when each modality gets its **own** backbone, specializing separately, combined only at the decision level via C1's adaptive fusion. The hypothesis is that naive channel-stacking forces a single set of early filters to jointly process RGB texture and spectral signal (mutual interference), whereas two specialized branches plus adaptive fusion can fall back to RGB when the spectral branch has nothing useful to add for a given sample — which prior input-level-only evidence cannot rule out either way. If the ablation (Section 10, row 2 vs. row 1) shows spectral fusion does *not* help on EuroSAT even at the decision level, that is reported as a finding, not hidden — see Section 9's dataset discussion and Section 18, critique #7.
 
+> **VERDICT: NOT SUPPORTED as stated.** Across k=5 the spectral branch beats the RGB branch by
+> +0.0010, not significant (McNemar p=0.195, below the 0.0007 seed floor). The ~3pp advantage seen
+> on the first single split was an artifact of one unusually weak RGB branch -- **do not cite 3pp**.
+> Worse for the hypothesis, per-class analysis shows the effect is *backwards*: the spectral branch
+> is weaker than RGB on the vegetation classes NDVI targets (mean dF1 -0.0010) and stronger on
+> non-vegetation (+0.0021), with its largest gain on SeaLake (+0.0101, water) and largest loss on
+> Pasture (-0.0106). What gain exists points at NDWI/NDBI territory, not NDVI.
+
 ### C3 — Efficient Channel Attention (ECA) at the Fusion Point
 Chosen over SE and CBAM after an explicit cost comparison (Section 13) because it adds a per-module parameter count in the single digits (a k-length 1D convolution, k≈3-5) versus the hundreds-to-thousands added by an SE bottleneck MLP, let alone CBAM's additional spatial-attention branch. This is the one attention mechanism that survives a genuine "efficiency-first" filter rather than being included because attention modules are fashionable.
 
+> **VERDICT: NOT SUPPORTED; leans negative.** Removing ECA (`--attention none`, k=5) was *better*:
+> +0.0019 on the RGB branch (Holm-adjusted p=0.0205) and +0.0010 fused (p_adj 0.254). Direction was
+> consistent but every effect is at or below the seed floor and the comparison was single-seed, so
+> the honest statement is "no evidence ECA helps, and some evidence it mildly hurts". The *cost*
+> claim is verified exactly: ECA is **10 parameters total** (1.24e-06 of the model) with latency
+> identical to three significant figures.
+
 ### C4 — Calibration-Coupled Evaluation
 Temperature scaling fit post-hoc on a held-out validation split, evaluated with ECE/MCE/Brier score alongside standard accuracy metrics. This is not a bolt-on: because C1's fusion weights are themselves derived from confidence, a miscalibrated branch would bias the fusion mechanism itself, not just the reported confidence number. Reporting calibration is therefore *validating a component of the proposed method*, not merely padding the results section — this connection is worth stating explicitly in the paper, since it's what turns "we also measured ECE" from a checkbox into an argument.
+
+> **VERDICT: SUPPORTED -- the strongest of the four.** Temperature scaling (fitted T = 0.58-0.61)
+> cuts pooled ECE from **0.0951 to 0.0043, a 22x reduction**, orders of magnitude above any noise
+> floor. The direction is the opposite of the usual assumption: label smoothing at 0.1 leaves the
+> model severely *under*-confident (mean confidence 0.8967 against ~99% accuracy), and calibration
+> corrects that. The coupling argument is weakened by C1's failure -- confidence turned out not to
+> drive fusion in practice -- but calibration stands on its own as a reporting contribution.
+> Caveat: equal-width ECE is unreliable at this accuracy; report equal-mass (adaptive) ECE.
 
 **What ties these together:** C1 needs well-calibrated per-branch confidence to produce sensible weights (motivating C4); C2 gives the two branches a genuine reason to disagree in informative, class-dependent ways (motivating why adaptive fusion, C1, should beat static fusion at all — if the branches always agreed, adaptive weighting would have nothing to do); C3 is the connective tissue that lets C1/C2 be added without breaking the paper's efficiency framing. Four contributions, one coherent story.
 
@@ -309,12 +352,55 @@ Full experimental section reports, per model in the comparison table: parameter 
 
 ---
 
-## 14. Expected Contributions
+## 14. Contributions (rewritten after experiments)
 
-1. **A confidence-aware adaptive fusion rule for dual-branch remote sensing ensembles** that is provably a strict generalization of fixed-weight averaging (Section 6), rather than an unrelated alternative — giving a clean, no-extra-implementation ablation against the standard baseline.
-2. **An efficiency-first attention comparison (ECA vs. SE vs. CBAM) specifically for multi-branch LULC fusion**, quantified in parameters/FLOPs/accuracy rather than accuracy alone, applicable beyond this specific architecture.
-3. **A calibration-coupled evaluation protocol** demonstrating that confidence calibration is not a cosmetic addition when confidence is used as a fusion signal — a methodological point with relevance beyond this specific dataset.
-4. **A reproducible, statistically rigorous benchmark** on EuroSAT-MS + RESISC45 reporting k-fold variance, paired significance tests, and effect sizes for every comparison — addressing a documented rigor gap (Section 3) in this sub-literature, independent of whether the proposed architecture itself is adopted.
+The original "Expected Contributions" list is preserved at the end of this section as the
+pre-registered prediction. What the work actually establishes, with the evidence, is:
+
+**1. A compact dual-branch fusion model that outperforms a substantially larger standard baseline
+on matched folds.** 0.9930 +- 0.0017 accuracy (k=5, three seeds, 15 folds) against a ResNet-50
+trained on the *same* folds under the *same* protocol: **+0.0054 to +0.0070, Holm-adjusted
+p ~ 1e-25**, at **8.0M parameters versus 25.6M**, running on **CPU at 24.6 images/sec** with no
+GPU. The controlled comparison matters: our ResNet-50 reaches 0.9864 on our folds, within 0.1pp of
+Helber et al.'s published 98.57%, so the pipeline reproduces the literature baseline before
+beating it.
+
+**2. Evidence that the gain comes from decision-level fusion, not from the backbone.** A single
+EfficientNet-B0 branch is *statistically indistinguishable* from ResNet-50 (+0.0013, p=0.11).
+Fusion beats the best single branch by +0.0031 (p_adj ~ 8e-9). On the 1.43% of samples where the
+branches disagree, RGB alone is right 44.7% of the time and the spectral branch 51.4%, while
+fusion reaches 73.1% -- **76% of the oracle ceiling**. Fusion also roughly **halves run-to-run
+variance** (fold sd 0.0029-0.0046 single-branch vs 0.0010-0.0023 fused), a reliability claim
+independent of accuracy.
+
+**3. A reported negative result on entropy-weighted adaptive fusion, with its mechanism.** C1
+gives no accuracy gain over the fixed 50/50 average it generalises, across ten folds and two
+branch configurations, and the reason is measurable rather than speculative: mean fusion weight
+0.4995, i.e. the rule operating at the point where it is mathematically identical to its own
+ablation. This is a genuine contribution -- entropy-weighted fusion is a widely reused idea and
+its failure mode on saturated branches is not documented elsewhere.
+
+**4. A statistical protocol that makes small effects interpretable, including a measured noise
+floor.** k=5 CV on shared folds, paired McNemar (exact binomial) plus paired-t, bootstrap CIs,
+Holm-Bonferroni over the full 20-comparison family, and -- the piece most often missing -- a
+**seed noise floor of 0.0007** obtained by re-running an identical configuration at three seeds.
+That floor disqualifies four candidate effects (C1, C2, C3, disjoint branch inputs) that would
+otherwise have looked publishable at raw p < 0.05, and it is why the one surviving small effect
+(augmentation, +0.0012) was seed-matched before being claimed.
+
+### What was predicted (pre-registration, kept for the record)
+
+1. A confidence-aware adaptive fusion rule that is provably a strict generalization of
+   fixed-weight averaging -- **the generalization holds mathematically; the empirical benefit did
+   not materialise.**
+2. An efficiency-first attention comparison (ECA vs SE vs CBAM) -- **only ECA vs none was run;
+   ECA showed no benefit. SE/CBAM remain untested.**
+3. A calibration-coupled evaluation protocol -- **delivered; the strongest surviving contribution
+   (22x ECE reduction), though the coupling to fusion weakened when C1 failed.**
+4. A reproducible, statistically rigorous benchmark on EuroSAT-MS + RESISC45 -- **delivered for
+   EuroSAT-MS and exceeded (seed floor, Holm correction, matched baseline). RESISC45 was dropped:
+   it is RGB-only, so NDVI cannot be computed and both branches would collapse to RGB. A genuine
+   multispectral cross-dataset test needs BigEarthNet or So2Sat.**
 
 ---
 
