@@ -1,5 +1,9 @@
 # C1 (Confidence-Aware Adaptive Fusion): k=5 Findings
 
+> **See also `SELECTIVE_PREDICTION.md`** — selective prediction is where this architecture's
+> advantage is large (2.35x lower AURC than ResNet-50, p=0.0008). It does NOT rescue C1:
+> adaptive fusion ties the fixed average there too (1.00x, p=0.152).
+
 **Status: C1's accuracy claim does not survive cross-validation.** Two architectures, five folds
 each, 27,000 samples per variant, identical folds throughout (`data/eurosat_folds_k5.json`).
 

@@ -40,6 +40,21 @@ two branches disagree, RGB alone is right 44.7% of the time and the spectral bra
 fusion reaches **73.1% — 76% of the oracle ceiling**. Fusion also roughly halves run-to-run
 variance.
 
+### Reliability: the largest effect in the project
+
+Selective prediction (classify the confident fraction automatically, defer the rest) —
+full details in [`docs/SELECTIVE_PREDICTION.md`](lulc-project/docs/SELECTIVE_PREDICTION.md):
+
+| model | accuracy | AURC | acc@95% coverage | params |
+|---|---|---|---|---|
+| ResNet-50 baseline | 0.9864 | 0.00215 | 0.9968 | 25.6M |
+| **Dual-branch fusion** | **0.9934** | **0.00077** | **0.9987** | **8.0M** |
+
+**2.35x lower selective risk than ResNet-50** (paired-t p=0.0008, Holm-adjusted 0.0032, better on
+5/5 folds) at a third of the parameters. Deferring 5% of tiles cuts the error rate from 0.66% to
+0.13%. The accuracy gain is small; the uncertainty gain is large, and it is what a single-backbone
+model cannot match.
+
 ### What does not hold up (reported, not removed)
 
 | hypothesis | outcome |

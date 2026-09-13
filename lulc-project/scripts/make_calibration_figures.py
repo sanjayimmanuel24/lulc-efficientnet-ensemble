@@ -40,6 +40,7 @@ from src.data.dataset import EuroSATMSDataset, spectral_in_chans
 from src.data.splits import build_or_load_kfolds, materialize_fold, CLASS_NAMES
 from src.data.transforms import EuroSATTransform
 from src.models.ensemble import DualBranchEfficientNet
+from src.models.baseline import SingleBackboneBaseline
 from src.models.fusion import confidence_weighted_fusion
 from src.training.train import TrainConfig, evaluate
 from src.losses.label_smoothing_torch import build_criterion
@@ -62,6 +63,9 @@ def parse_args():
     p.add_argument("--spectral-branch-mode", default="rgb_plus_indices")
     p.add_argument("--attention", choices=["eca", "none"], default="eca")
     p.add_argument("--n-bins", type=int, default=12)
+    p.add_argument("--baseline-backbone", type=str, default=None,
+                   help="Load a single-backbone baseline instead of the dual-branch model "
+                        "(must match how the tag was trained).")
     return p.parse_args()
 
 
@@ -99,8 +103,13 @@ def main():
     pooled = {k: [] for k in ("y", "rgb", "spectral", "avg", "c1", "rgb_uncal", "c1_uncal")}
     for fold in range(args.folds):
         split = materialize_fold(folds, fold)
-        model = DualBranchEfficientNet(num_classes=len(CLASS_NAMES), pretrained=False,
-                                        spectral_in_chans=chans, attention=args.attention).to(device)
+        if args.baseline_backbone:
+            model = SingleBackboneBaseline(num_classes=len(CLASS_NAMES),
+                                            backbone_name=args.baseline_backbone,
+                                            pretrained=False).to(device)
+        else:
+            model = DualBranchEfficientNet(num_classes=len(CLASS_NAMES), pretrained=False,
+                                            spectral_in_chans=chans, attention=args.attention).to(device)
         ckpt = PROJECT_ROOT / "checkpoints" / "cv" / args.tag / "fold_{}_best.pt".format(fold)
         model.load_state_dict(torch.load(ckpt, map_location=device))
         model.eval()
