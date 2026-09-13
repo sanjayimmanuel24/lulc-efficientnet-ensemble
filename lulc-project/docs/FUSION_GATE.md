@@ -40,36 +40,51 @@ cannot access.
 
 ## 3. Results (tag `augmented`, k=5, 27,000 test tiles)
 
+Gate trained on 70% of validation; the remaining 30% is held out **solely** to choose the stopping
+point. Baselines are evaluated with their fitted temperatures (their best configuration); the gate
+uses raw logits, because logit magnitude is exactly what temperature scaling would rescale away.
+
 | method | clean | 25% | 50% | 75% | 100% corrupt | total drop |
 |---|---|---|---|---|---|---|
-| Fixed 50/50 | 0.9933 | 0.9876 | 0.9664 | 0.9299 | 0.9159 | -7.7pp |
-| C1 entropy fusion | 0.9934 | 0.9878 | 0.9659 | 0.9293 | 0.9151 | -7.8pp |
-| **Learned gate** | 0.9912 | 0.9896 | **0.9891** | **0.9874** | **0.9857** | **-0.55pp** |
+| Fixed 50/50 | 0.9933 | 0.9859 | 0.9709 | 0.9374 | 0.9211 | -7.22pp |
+| C1 entropy fusion | 0.9934 | 0.9861 | 0.9714 | 0.9376 | 0.9208 | -7.26pp |
+| **Learned gate** | 0.9910 | 0.9893 | 0.9887 | 0.9874 | **0.9860** | **-0.50pp** |
 | RGB branch alone (fallback ceiling) | 0.9864 | 0.9864 | 0.9864 | 0.9864 | 0.9864 | 0 |
-| **mean gate weight on RGB** | **0.381** | 0.895 | 0.955 | 0.979 | **0.989** | |
+| **mean gate weight on RGB** | **0.521** | 0.911 | 0.968 | 0.979 | **0.988** | |
 
 Gate minus entropy fusion:
 
 | severity | delta | folds better | paired-t |
 |---|---|---|---|
-| 0.00 | **-0.0021** | **0/5** | **0.028** |
-| 0.25 | +0.0018 | 4/5 | 0.118 |
-| 0.50 | +0.0232 | 5/5 | 0.196 |
-| 0.75 | +0.0582 | 5/5 | 0.151 |
-| 1.00 | **+0.0705** | **5/5** | 0.176 |
+| 0.00 | **-0.0023** | **0/5** | **0.045** |
+| 0.25 | +0.0031 | 4/5 | 0.185 |
+| 0.50 | +0.0174 | 4/5 | 0.115 |
+| 0.75 | +0.0498 | 5/5 | 0.102 |
+| 1.00 | **+0.0652** | **5/5** | 0.160 |
+
+### The gate is not overfitting
+
+This was the check that could have invalidated the whole result. Adding the held-out split moved
+test performance by <=0.0003 at every severity (0.9912 -> 0.9910 clean; 0.9857 -> 0.9860 at full
+corruption), so the earlier fixed-epoch fit was not exploiting its training data.
+
+The stopping epochs chosen per fold were **70, 270, 100, 50, 300** — a fixed 300 epochs was
+over-training three of five folds. It happened not to matter here, but that could not have been
+known without measuring it.
 
 ## 4. The claim
 
-> Replacing entropy-weighted fusion with a 1,100-parameter learned gate reduces the accuracy lost
-> to complete failure of an input modality from **7.8pp to 0.55pp**. The gate's weight on the
-> surviving branch rises from 0.381 to 0.989 as the band degrades, where entropy-based weighting
-> moves only 0.498 to 0.597. At full corruption the gate reaches 0.9857 against a 0.9864 fallback
-> ceiling — it recovers **~99% of the available headroom**.
+> Replacing entropy-weighted fusion with a 1,089-parameter learned gate reduces the accuracy lost
+> to complete failure of an input modality from **7.26pp to 0.50pp** — roughly **15x less
+> degradation**. The gate's weight on the surviving branch rises from 0.521 to 0.988 as the band
+> degrades, where entropy-based weighting moves only 0.498 to 0.597. At full corruption the gate
+> reaches 0.9860 against a 0.9864 fallback ceiling — it recovers **~99% of the available
+> headroom**.
 
 ## 5. Honest costs and limits
 
-- **It costs 0.21pp on clean data** (0.9912 vs 0.9934), worse on **0/5 folds**, paired-t
-  **p=0.028** — a statistically significant regression. This is the standard
+- **It costs 0.23pp on clean data** (0.9910 vs 0.9934), worse on **0/5 folds**, paired-t
+  **p=0.045** — a statistically significant regression. This is the standard
   robustness/accuracy trade-off: the gate is trained on a mixture that includes corrupted inputs,
   so it is not optimal when nothing is broken. **Report it as a trade-off, never as a free win.**
   A deployment that will never lose a band should keep plain averaging.
@@ -77,9 +92,10 @@ Gate minus entropy fusion:
   folds, but paired-t p=0.176, because entropy fusion's fold variance under corruption is enormous
   (+-0.0971). A 5/5 sign test floors at p=0.0625 regardless. State it as "large and consistent on
   every fold; n=5 limits formal significance", not as p<0.05.
-- **Validation does quadruple duty** now — early stopping, checkpoint selection, temperature
-  fitting and gate training. Use `--calibration-split-frac` and a dedicated gate split before
-  making strong claims about the absolute numbers.
+- **Gate training now uses a dedicated split** (`--gate-split-frac 0.3`), so the gate's stopping
+  point is chosen on data it never fit. What remains is that the *checkpoint* was selected on the
+  same validation set, which makes the model's behaviour there mildly optimistic. Fixing that
+  needs retraining with `--calibration-split-frac`, roughly 5 GPU-hours per sweep.
 - **Corruption is synthetic.** Gaussian blending of the index channel is a proxy for sensor
   failure, not a real one. A genuinely missing band, cloud occlusion, or a 3-band sensor would each
   behave differently.

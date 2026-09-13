@@ -81,6 +81,9 @@ def parse_args():
     p.add_argument("--lr", type=float, default=1e-2)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--cached", action="store_true", help="reuse cached logits, skip all GPU work")
+    p.add_argument("--gate-split-frac", type=float, default=0.3,
+                   help="Fraction of VALIDATION held out from gate training, used only to select "
+                        "the gate's stopping point. 0 disables (the original fixed-epoch fit).")
     return p.parse_args()
 
 
@@ -192,25 +195,61 @@ def dump_logits(args, device):
 
 
 # ---------------------------------------------------------------- train + eval
-def fit_gate(feats, lr_logits, ls_logits, y, args):
+def fit_gate(feats, lr_logits, ls_logits, y, args, rng):
+    """
+    Fit the gate on a TRAIN portion of validation,selects its stopping point on a
+    disjoint HELD-OUT portion. Without the held-out part the gate runs a fixed
+    number of epochs with no way to notice it is overfitting -- and an overfitted
+    gate would still look fine on its own training data.
+
+    The split is by sample index and is shared across corruption severities, so a
+    tile never appears in both halves under different corruptions.
+    """
     torch.manual_seed(args.seed)
     f = torch.from_numpy(feats)
-    mu, sd = f.mean(0, keepdim=True), f.std(0, keepdim=True).clamp_min(1e-6)
-    fn = (f - mu) / sd
     pa = torch.from_numpy(softmax(lr_logits, 1.0))
     pb = torch.from_numpy(softmax(ls_logits, 1.0))
     t = torch.from_numpy(y).long()
 
+    n = len(y)
+    if args.gate_split_frac > 0:
+        n_hold = int(round(args.gate_split_frac * n))
+        perm = rng.permutation(n)
+        hold_idx, tr_idx = perm[:n_hold], perm[n_hold:]
+    else:
+        tr_idx = np.arange(n)
+        hold_idx = np.arange(0)
+
+    tr = torch.from_numpy(tr_idx)
+    mu, sd = f[tr].mean(0, keepdim=True), f[tr].std(0, keepdim=True).clamp_min(1e-6)
+    fn = (f - mu) / sd
+
     gate = FusionGate(feats.shape[1], args.hidden)
     opt = torch.optim.Adam(gate.parameters(), lr=args.lr, weight_decay=1e-4)
-    for _ in range(args.epochs):
+
+    def loss_on(idx):
+        w = gate(fn[idx]).unsqueeze(-1)
+        fused = w * pa[idx] + (1 - w) * pb[idx]
+        return nn.functional.nll_loss(torch.log(fused.clamp_min(_EPS)), t[idx])
+
+    best, best_state, best_epoch = float("inf"), None, 0
+    ho = torch.from_numpy(hold_idx) if len(hold_idx) else None
+    for ep in range(args.epochs):
+        gate.train()
         opt.zero_grad(set_to_none=True)
-        w = gate(fn).unsqueeze(-1)
-        fused = w * pa + (1 - w) * pb
-        loss = nn.functional.nll_loss(torch.log(fused.clamp_min(_EPS)), t)
-        loss.backward()
+        loss_on(tr).backward()
         opt.step()
-    return gate, mu, sd
+        if ho is not None and (ep + 1) % 5 == 0:
+            gate.eval()
+            with torch.no_grad():
+                hl = float(loss_on(ho))
+            if hl < best:
+                best, best_epoch = hl, ep + 1
+                best_state = {k: v.clone() for k, v in gate.state_dict().items()}
+    if best_state is not None:
+        gate.load_state_dict(best_state)
+    gate.eval()
+    return gate, mu, sd, best_epoch, best
 
 
 def apply_gate(gate, mu, sd, feats, lr_logits, ls_logits):
@@ -235,6 +274,9 @@ def main():
 
     for f in range(args.folds):
         d = np.load(cache_dir / "fold_{}.npz".format(f))
+        m = json.loads((PROJECT_ROOT / "results" / "cv" / args.tag /
+                        "fold_{}.json".format(f)).read_text())
+        t_rgb, t_spec = m["t_rgb"], m["t_spectral"]
 
         # --- train the gate on validation only, pooled over the training severities ---
         F, LRs, LSs, Ys = [], [], [], []
@@ -242,14 +284,18 @@ def main():
             k = "val_{:.2f}".format(sev)
             lr, ls, y = d[k + "_lr"], d[k + "_ls"], d[k + "_y"]
             F.append(gate_features(lr, ls)); LRs.append(lr); LSs.append(ls); Ys.append(y)
-        gate, mu, sd = fit_gate(np.concatenate(F), np.concatenate(LRs),
-                                np.concatenate(LSs), np.concatenate(Ys), args)
+        rng = np.random.default_rng(args.seed + f)
+        gate, mu, sd, best_ep, best_hl = fit_gate(np.concatenate(F), np.concatenate(LRs),
+                                                   np.concatenate(LSs), np.concatenate(Ys), args, rng)
 
         # --- evaluate on test at every severity ---
         for sev in args.eval_severities:
             k = "test_{:.2f}".format(sev)
             lr, ls, y = d[k + "_lr"], d[k + "_ls"], d[k + "_y"]
-            pa, pb = softmax(lr, 1.0), softmax(ls, 1.0)
+            # Baselines get their FITTED temperatures (their best configuration, and what
+            # every other script in this repo reports). The gate takes raw logits because
+            # its magnitude features are exactly what temperature scaling would rescale.
+            pa, pb = softmax(lr, t_rgb), softmax(ls, t_spec)
             p_c1, _, _ = confidence_weighted_fusion(pa, pb)
             p_gate, w = apply_gate(gate, mu, sd, gate_features(lr, ls), lr, ls)
 
@@ -258,8 +304,8 @@ def main():
             acc["learned_gate"][sev].append(float((p_gate.argmax(-1) == y).mean()))
             acc["rgb_branch_only"][sev].append(float((pa.argmax(-1) == y).mean()))
             gate_w[sev].append(float(w.mean()))
-        print("fold {}: gate trained ({} params)".format(
-            f, sum(p.numel() for p in gate.parameters())))
+        print("fold {}: gate trained ({} params), stopped at epoch {} (held-out loss {:.4f})".format(
+            f, sum(p.numel() for p in gate.parameters()), best_ep, best_hl))
 
     print("")
     print("Learned fusion gate vs entropy fusion, tag={}, k={}".format(args.tag, args.folds))
