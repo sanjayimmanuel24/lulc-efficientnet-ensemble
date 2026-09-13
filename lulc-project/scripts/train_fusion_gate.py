@@ -50,7 +50,8 @@ from torch.utils.data import DataLoader
 
 from src.calibration.temperature_scaling import softmax
 from src.data.dataset import EuroSATMSDataset, spectral_in_chans
-from src.data.splits import build_or_load_kfolds, materialize_fold, CLASS_NAMES
+from src.data.splits import (build_or_load_kfolds, default_folds_path,
+                             materialize_fold, CLASS_NAMES)
 from src.data.transforms import EuroSATTransform
 from src.evaluation.statistical_tests import paired_ttest
 from src.models.ensemble import DualBranchEfficientNet
@@ -149,7 +150,7 @@ def dump_logits(args, device):
     cache_dir = PROJECT_ROOT / "results" / "cv" / args.tag / "gate_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
     chans = spectral_in_chans("rgb_plus_indices", 1)
-    folds = build_or_load_kfolds(TIF_ROOT, PROJECT_ROOT / "data" / "eurosat_folds_k5.json", k=args.folds)
+    folds = build_or_load_kfolds(TIF_ROOT, default_folds_path(args.folds), k=args.folds)
     severities = sorted(set(args.train_severities) | set(args.eval_severities))
 
     for f in range(args.folds):

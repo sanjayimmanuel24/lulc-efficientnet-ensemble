@@ -194,3 +194,15 @@ def split_in_two(split_data: dict, frac: float, seed: int = 42) -> tuple[dict, d
                 "labels": [int(labels[i]) for i in idx]}
 
     return _take(first_idx), _take(second_idx)
+
+
+def default_folds_path(k: int) -> Path:
+    """
+    Canonical location of the k-fold definition file.
+
+    Exists because several scripts hardcoded "eurosat_folds_k5.json" while accepting
+    a --folds flag. Passing -k 10 then loaded the 5-fold file and indexed past its
+    end -- an IndexError if you were lucky, and silently wrong folds if you were not.
+    Derive the name from k; never spell it out at a call site.
+    """
+    return Path(__file__).parent.parent.parent / "data" / "eurosat_folds_k{}.json".format(k)

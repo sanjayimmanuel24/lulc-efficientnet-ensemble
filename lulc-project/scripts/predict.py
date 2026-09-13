@@ -31,7 +31,8 @@ import numpy as np
 import torch
 
 from src.data.dataset import EuroSATMSDataset, spectral_in_chans
-from src.data.splits import build_or_load_kfolds, materialize_fold, CLASS_NAMES
+from src.data.splits import (build_or_load_kfolds, default_folds_path,
+                             materialize_fold, CLASS_NAMES)
 from src.data.transforms import EuroSATTransform
 from src.models.ensemble import DualBranchEfficientNet
 from src.models.fusion import confidence_weighted_fusion
@@ -41,7 +42,6 @@ TIF_ROOT = (
     PROJECT_ROOT / "data" / "eurosat" / "EuroSATallBands" / "ds" / "images"
     / "remote_sensing" / "otherDatasets" / "sentinel_2" / "tif"
 )
-FOLDS_PATH = PROJECT_ROOT / "data" / "eurosat_folds_k5.json"
 
 GREEN, RED, DIM, BOLD, OFF = "\033[92m", "\033[91m", "\033[2m", "\033[1m", "\033[0m"
 
@@ -52,6 +52,7 @@ def parse_args():
     p.add_argument("--random", type=int, default=8, help="how many random held-out tiles to classify")
     p.add_argument("--tag", default="augmented", help="which trained run to load (default: best)")
     p.add_argument("--fold", type=int, default=0)
+    p.add_argument("-k", "--folds", type=int, default=5)
     p.add_argument("--image-size", type=int, default=224)
     p.add_argument("--spectral-branch-mode", default="rgb_plus_indices")
     p.add_argument("--attention", choices=["eca", "none"], default="eca")
@@ -107,7 +108,7 @@ def main():
         labels = [CLASS_NAMES.index(Path(args.image).parent.name)
                   if Path(args.image).parent.name in CLASS_NAMES else -1]
     else:
-        folds = build_or_load_kfolds(TIF_ROOT, FOLDS_PATH, k=5)
+        folds = build_or_load_kfolds(TIF_ROOT, default_folds_path(args.folds), k=args.folds)
         split = materialize_fold(folds, args.fold)["test"]
         rng = np.random.default_rng(args.seed)
         pool = np.arange(len(split["files"]))

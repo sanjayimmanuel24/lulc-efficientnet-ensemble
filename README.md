@@ -79,14 +79,13 @@ Entropy is computed from the softmax, which divides out logit magnitude — so a
 
 | method | clean | NIR fully corrupted | accuracy lost |
 |---|---|---|---|
-| C1 entropy fusion | 0.9934 | 0.9208 | −7.26pp |
-| **Learned gate** | 0.9910 | **0.9860** | **−0.50pp** |
-| gate weight on RGB | 0.521 | **0.988** | (C1 reaches only 0.597) |
+| C1 entropy fusion | 0.9923 | 0.8963 | −9.60pp |
+| **Learned gate** | 0.9916 | **0.9829** | **−0.87pp** |
+| gate weight on RGB | 0.442 | **0.982** | (C1 reaches only 0.597) |
 
-**+6.52pp at full corruption, better on 5/5 folds**, recovering ~99% of the available headroom.
-**Honest cost: −0.23pp on clean data (0/5 folds, p=0.045)** — a genuine robustness/accuracy
-trade-off, and the robustness gains are not formally significant at n=5 despite being large and
-unanimous across folds.
+**+8.66pp at full corruption, unanimous on 10/10 folds** (Wilcoxon p=0.0020, the n=10 floor;
+bootstrap CI excluding zero at every corrupted severity), and **10× more stable across folds**.
+Clean-data cost is −0.07pp and not statistically significant. *(k=10, tag `augmented_k10`.)*
 
 ### What does not hold up (reported, not removed)
 

@@ -191,3 +191,21 @@ def test_subsample_is_deterministic_for_a_seed():
              "labels": [i % 5 for i in range(100)]}
     assert subsample_split(split, 0.2, seed=7) == subsample_split(split, 0.2, seed=7)
     assert subsample_split(split, 0.2, seed=7) != subsample_split(split, 0.2, seed=8)
+
+
+def test_folds_path_is_derived_from_k():
+    """
+    Guards a real bug: several scripts hardcoded "eurosat_folds_k5.json" while
+    accepting --folds, so -k 10 loaded the 5-fold file and indexed past its end.
+    """
+    from src.data.splits import default_folds_path
+    assert default_folds_path(5).name == "eurosat_folds_k5.json"
+    assert default_folds_path(10).name == "eurosat_folds_k10.json"
+    assert default_folds_path(5) != default_folds_path(10)
+
+
+def test_folds_path_sits_in_the_data_directory():
+    from src.data.splits import default_folds_path
+    p = default_folds_path(5)
+    assert p.parent.name == "data"
+    assert p.parent.parent.name == "lulc-project"

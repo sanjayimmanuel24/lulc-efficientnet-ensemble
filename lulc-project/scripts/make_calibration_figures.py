@@ -37,7 +37,8 @@ from src.calibration.temperature_scaling import (
     fit_temperature, softmax,
 )
 from src.data.dataset import EuroSATMSDataset, spectral_in_chans
-from src.data.splits import build_or_load_kfolds, materialize_fold, CLASS_NAMES
+from src.data.splits import (build_or_load_kfolds, default_folds_path,
+                             materialize_fold, CLASS_NAMES)
 from src.data.transforms import EuroSATTransform
 from src.models.ensemble import DualBranchEfficientNet
 from src.models.baseline import SingleBackboneBaseline
@@ -94,7 +95,7 @@ def main():
     args = parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    folds = build_or_load_kfolds(TIF_ROOT, PROJECT_ROOT / "data" / "eurosat_folds_k5.json", k=args.folds)
+    folds = build_or_load_kfolds(TIF_ROOT, default_folds_path(args.folds), k=args.folds)
     chans = spectral_in_chans(args.spectral_branch_mode, 1)
     cfg = TrainConfig(num_classes=len(CLASS_NAMES), image_sizes=(args.image_size,),
                       batch_size=args.batch_size)

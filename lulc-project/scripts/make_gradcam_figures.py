@@ -31,7 +31,8 @@ import numpy as np
 import torch
 
 from src.data.dataset import EuroSATMSDataset, spectral_in_chans
-from src.data.splits import build_or_load_kfolds, materialize_fold, CLASS_NAMES
+from src.data.splits import (build_or_load_kfolds, default_folds_path,
+                             materialize_fold, CLASS_NAMES)
 from src.data.transforms import EuroSATTransform
 from src.explainability.gradcam import GradCAM
 from src.models.ensemble import DualBranchEfficientNet
@@ -51,6 +52,7 @@ def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--tag", default="default")
     p.add_argument("--fold", type=int, default=0)
+    p.add_argument("-k", "--folds", type=int, default=5)
     p.add_argument("--image-size", type=int, default=224)
     p.add_argument("--spectral-branch-mode", default="rgb_plus_indices")
     p.add_argument("--attention", choices=["eca", "none"], default="eca")
@@ -99,7 +101,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    folds = build_or_load_kfolds(TIF_ROOT, PROJECT_ROOT / "data" / "eurosat_folds_k5.json", k=5)
+    folds = build_or_load_kfolds(TIF_ROOT, default_folds_path(args.folds), k=args.folds)
     split = materialize_fold(folds, args.fold)
     chans = spectral_in_chans(args.spectral_branch_mode, 1)
 

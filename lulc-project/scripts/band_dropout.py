@@ -37,7 +37,8 @@ from torch.utils.data import DataLoader
 
 from src.calibration.temperature_scaling import softmax
 from src.data.dataset import EuroSATMSDataset, spectral_in_chans
-from src.data.splits import build_or_load_kfolds, materialize_fold, CLASS_NAMES
+from src.data.splits import (build_or_load_kfolds, default_folds_path,
+                             materialize_fold, CLASS_NAMES)
 from src.data.transforms import EuroSATTransform
 from src.models.ensemble import DualBranchEfficientNet
 from src.models.fusion import confidence_weighted_fusion
@@ -96,7 +97,7 @@ def main():
     args = parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     chans = spectral_in_chans("rgb_plus_indices", 1)
-    folds = build_or_load_kfolds(TIF_ROOT, PROJECT_ROOT / "data" / "eurosat_folds_k5.json", k=args.folds)
+    folds = build_or_load_kfolds(TIF_ROOT, default_folds_path(args.folds), k=args.folds)
     fold_ids = [args.only_fold] if args.only_fold is not None else list(range(args.folds))
 
     # per-fold temperatures fitted on clean data -- calibration is NOT refitted under
