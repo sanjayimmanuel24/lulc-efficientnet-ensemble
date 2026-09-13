@@ -70,6 +70,24 @@ Details in [`docs/BAND_DROPOUT.md`](lulc-project/docs/BAND_DROPOUT.md):
 on clean data. This is the argument for two branches, and it is a robustness argument rather than
 an accuracy one.
 
+### A learned gate fixes the failure entropy fusion exposed
+
+Entropy is computed from the softmax, which divides out logit magnitude — so a branch fed noise is
+*confidently wrong* and entropy cannot see it. A ~1,100-parameter gate given magnitude features
+(max-logit, logsumexp) and trained with band-dropout augmentation can. Backbones frozen; details in
+[`docs/FUSION_GATE.md`](lulc-project/docs/FUSION_GATE.md):
+
+| method | clean | NIR fully corrupted | accuracy lost |
+|---|---|---|---|
+| C1 entropy fusion | 0.9934 | 0.9151 | −7.8pp |
+| **Learned gate** | 0.9912 | **0.9857** | **−0.55pp** |
+| gate weight on RGB | 0.381 | **0.989** | (C1 reaches only 0.597) |
+
+**+7.05pp at full corruption, better on 5/5 folds**, recovering ~99% of the available headroom.
+**Honest cost: −0.21pp on clean data (0/5 folds, p=0.028)** — a genuine robustness/accuracy
+trade-off, and the robustness gains are not formally significant at n=5 despite being large and
+unanimous across folds.
+
 ### What does not hold up (reported, not removed)
 
 | hypothesis | outcome |

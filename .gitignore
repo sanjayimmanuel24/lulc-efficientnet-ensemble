@@ -32,3 +32,6 @@ Thumbs.db
 # NOTE: lulc-project/results/ IS tracked (~14 MB). The per-fold metrics, the
 # per-sample prediction dumps and the figures are what make the statistical
 # analysis reproducible without re-running 40+ GPU-hours of training.
+
+# gate logit cache: ~1.5 GB of raw logits, regenerable from checkpoints
+lulc-project/results/cv/*/gate_cache/
