@@ -55,6 +55,21 @@ full details in [`docs/SELECTIVE_PREDICTION.md`](lulc-project/docs/SELECTIVE_PRE
 0.13%. The accuracy gain is small; the uncertainty gain is large, and it is what a single-backbone
 model cannot match.
 
+### Robustness: decision-level fusion survives sensor failure
+
+When the NIR-derived channel fails, input-level fusion (RGB+NDVI stacked into one network — the
+Helber-style design) collapses; decision-level fusion does not. Same backbone, same inputs.
+Details in [`docs/BAND_DROPOUT.md`](lulc-project/docs/BAND_DROPOUT.md):
+
+| model | clean | NIR channel fully corrupted |
+|---|---|---|
+| Input-level fusion | 0.9912 | **0.1445** (chance = 0.10) |
+| **Decision-level fusion** | 0.9934 | **0.9208** |
+
+**6.4x relative advantage under sensor failure**, from an architecture that differs by only ~0.2pp
+on clean data. This is the argument for two branches, and it is a robustness argument rather than
+an accuracy one.
+
 ### What does not hold up (reported, not removed)
 
 | hypothesis | outcome |
