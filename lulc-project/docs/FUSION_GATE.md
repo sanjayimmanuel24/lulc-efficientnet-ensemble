@@ -88,9 +88,9 @@ known without measuring it.
   robustness/accuracy trade-off: the gate is trained on a mixture that includes corrupted inputs,
   so it is not optimal when nothing is broken. **Report it as a trade-off, never as a free win.**
   A deployment that will never lose a band should keep plain averaging.
-- **The robustness gains are not formally significant at n=5.** +7.05pp at full corruption on 5/5
-  folds, but paired-t p=0.176, because entropy fusion's fold variance under corruption is enormous
-  (+-0.0971). A 5/5 sign test floors at p=0.0625 regardless. State it as "large and consistent on
+- **The robustness gains are not formally significant at n=5.** +6.52pp at full corruption on 5/5
+  folds, but paired-t p=0.160, because entropy fusion's fold variance under corruption is enormous
+  (+-0.0868). A 5/5 sign test floors at p=0.0625 regardless. State it as "large and consistent on
   every fold; n=5 limits formal significance", not as p<0.05.
 - **Gate training now uses a dedicated split** (`--gate-split-frac 0.3`), so the gate's stopping
   point is chosen on data it never fit. What remains is that the *checkpoint* was selected on the
